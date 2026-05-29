@@ -1,0 +1,18 @@
+{
+  "name": "task-enhancement",
+  "version": "1.0.0",
+  "description": "Enhance task details into a step-by-step process using the Cursor SDK",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "enhance": "node src/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@cursor/sdk": "^1.0.16",
+    "dotenv": "^16.5.0"
+  }
+}
