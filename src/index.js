@@ -29,7 +29,7 @@ const buildEnhancePrompt = (task, template) => {
     : `${base}\n\nTask:\n${task}`;
 };
 
-const REQUIRED_ENV = ["CURSOR_API_KEY"];
+const REQUIRED_ENV = ["API_KEY"];
 
 const checkEnv = () => {
   const missing = REQUIRED_ENV.filter((key) => !process.env[key]?.trim());
@@ -39,8 +39,8 @@ const checkEnv = () => {
   }
 
   return {
-    apiKey: process.env.CURSOR_API_KEY,
-    model: process.env.CURSOR_MODEL ?? "composer-2.5",
+    apiKey: process.env.API_KEY,
+    model: process.env.model ?? "composer-2.5",
     enhancePrompt: process.env.ENHANCE_PROMPT,
   };
 };
@@ -68,10 +68,7 @@ const readTask = async () => {
 
 const enhanceTask = async (task, { apiKey, model, enhancePrompt }) => {
   try {
-    const prompt = buildEnhancePrompt(task, enhancePrompt);
-    console.log(prompt);
-    exit(0);
-    const result = await Agent.prompt(prompt, {
+    const result = await Agent.prompt(buildEnhancePrompt(task, enhancePrompt), {
       apiKey,
       model: { id: model },
       local: { cwd: process.cwd()},

@@ -20,7 +20,7 @@ npm install
 cp .env.example .env
 ```
 
-Edit `.env` and set your `CURSOR_API_KEY`. Customize `ENHANCE_PROMPT` to change how tasks are expanded (use `{task}` where the user input should go).
+Edit `.env` and set your `API_KEY`. Customize `ENHANCE_PROMPT` to change how tasks are expanded (use `{task}` where the user input should go).
 
 ## Usage
 
@@ -40,8 +40,8 @@ echo "Build a login page" | npm run enhance
 
 | Variable | Required | Description |
 |---|---|---|
-| `CURSOR_API_KEY` | Yes | Your Cursor API key |
-| `CURSOR_MODEL` | No | Model to use (default: `composer-2.5`) |
+| `API_KEY` | Yes | Your Cursor API key |
+| `model` | No | Model to use (default: `composer-2.5`) |
 | `ENHANCE_PROMPT` | No | Prompt template for enhancement; include `{task}` for the user input (built-in default if omitted) |
 
 ## Exit codes
