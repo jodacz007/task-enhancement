@@ -1,7 +1,9 @@
 import "dotenv/config";
 import { Agent, CursorAgentError } from "@cursor/sdk";
 
-const ENHANCE_PROMPT = (task) => `You are a task planning assistant. Given the task below, produce a clear, actionable step-by-step process.
+const TASK_PLACEHOLDER = "{task}";
+
+const DEFAULT_ENHANCE_PROMPT = `You are a task planning assistant. Given the task below, produce a clear, actionable step-by-step process.
 
 Requirements:
 - Break the work into ordered steps that someone can follow sequentially
@@ -10,8 +12,22 @@ Requirements:
 - Keep steps concise but complete enough to execute
 - Use numbered steps with a short title and brief details
 
-Task:
-${task}`;
+Format:
+  * Step 1: Title
+  * Step 2: Description
+  * Step 3: Steps
+  * Step 4: Scope (if there is)
+  * Step 5: Notes (if there is)
+  ...
+
+Task: ${TASK_PLACEHOLDER}`;
+
+const buildEnhancePrompt = (task, template) => {
+  const base = (template?.trim() || DEFAULT_ENHANCE_PROMPT);
+  return base.includes(TASK_PLACEHOLDER)
+    ? base.replaceAll(TASK_PLACEHOLDER, task)
+    : `${base}\n\nTask:\n${task}`;
+};
 
 const REQUIRED_ENV = ["CURSOR_API_KEY"];
 
@@ -19,13 +35,13 @@ const checkEnv = () => {
   const missing = REQUIRED_ENV.filter((key) => !process.env[key]?.trim());
   if (missing.length > 0) {
     console.error(`Missing required environment variable(s): ${missing.join(", ")}`);
-    console.error("Copy .env.example to .env and add your values.");
     process.exit(1);
   }
 
   return {
     apiKey: process.env.CURSOR_API_KEY,
     model: process.env.CURSOR_MODEL ?? "composer-2.5",
+    enhancePrompt: process.env.ENHANCE_PROMPT,
   };
 };
 
@@ -34,8 +50,7 @@ const readTask = async () => {
   if (arg) return arg;
 
   if (process.stdin.isTTY) {
-    console.error("Usage: npm run enhance -- \"Your task description\"");
-    console.error("   or: echo \"Your task\" | npm run enhance");
+    console.error('Usage: npm run enhance -- "Your task description"');
     process.exit(1);
   }
 
@@ -51,12 +66,15 @@ const readTask = async () => {
   return input;
 };
 
-const enhanceTask = async (task, { apiKey, model }) => {
+const enhanceTask = async (task, { apiKey, model, enhancePrompt }) => {
   try {
-    const result = await Agent.prompt(ENHANCE_PROMPT(task), {
+    const prompt = buildEnhancePrompt(task, enhancePrompt);
+    console.log(prompt);
+    exit(0);
+    const result = await Agent.prompt(prompt, {
       apiKey,
       model: { id: model },
-      local: { cwd: process.cwd() },
+      local: { cwd: process.cwd()},
     });
 
     if (result.status === "error") {
